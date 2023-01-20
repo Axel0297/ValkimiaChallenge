@@ -1,0 +1,19 @@
+﻿@page "/customers/Delete/{id:guid}"
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ICustomerService _customerService
+@inject NavigationManager _navigationManager
+
+<text>delete...</text>
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await _customerService.DeleteCustomerAsync(Id);
+        _navigationManager.NavigateTo("/customers/list");
+    }
+}

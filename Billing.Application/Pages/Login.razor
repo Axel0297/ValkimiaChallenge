@@ -1,0 +1,58 @@
+﻿@page "/login"
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ITokenService _tokenService
+@inject ICustomerService _customerService
+@inject NavigationManager _navigationManager
+
+<h3 class="text-center">Ingrese a su cuenta</h3>
+
+<div class="form-control">
+    <table class="table">
+        <tr>
+            <td>Email: </td>
+            <td><input type="email" @bind="CustomerLogin.Email" /></td>
+        </tr>
+        <tr>
+            <td>Password: </td>
+            <td><input type="Password" @bind="CustomerLogin.Password" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                @if (!loggingIn)
+                {
+                    <input type="submit" value="Ingresar" @onclick="OnSubmit" />
+                }
+                else
+                {
+                    <p>
+                        Logging in...
+                    </p>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+@code {
+    CustomerLoginModel CustomerLogin { get; set; } = new CustomerLoginModel();
+    private bool loggingIn;
+
+    protected async void OnSubmit()
+    {
+        loggingIn = true;
+
+        var result = await _customerService.LoginAsync(CustomerLogin);
+
+        if (result != null)
+        {
+            var token = await _tokenService.GetToken();
+            _navigationManager.NavigateTo($"/invoices/list");
+        }
+
+        loggingIn = false;
+    }
+}

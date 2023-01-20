@@ -1,0 +1,55 @@
+﻿@page "/customers/list"
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ICustomerService _customerService
+
+<h1>Lista de Clientes</h1>
+
+<p>Clientes ingresados en el sistema</p>
+
+@if (Customers == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Direccion</th>
+                <th>Email</th>
+                <th>Habilitado</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in Customers)
+            {
+                <tr>
+                    <td>@customer.Name</td>
+                    <td>@customer.LastName</td>
+                    <td>@customer.Address</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.Enabled</td>
+                    <td><a href="/customers/edit/@customer.Id">Editar</a></td>
+                    <td><a href="/customers/Delete/@customer.Id">Borrar</a></td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    List<CustomerListModel> Customers { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customers = await _customerService.GetAllCustomersAsync();
+    }
+}

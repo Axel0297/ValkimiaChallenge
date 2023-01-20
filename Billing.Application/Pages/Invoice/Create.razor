@@ -1,0 +1,74 @@
+﻿@page "/invoices/create"
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ICustomerService _customerService
+@inject IInvoiceService _invoiceService
+@inject NavigationManager _navigationManager
+
+<h1>Agregar Nueva Factura</h1>
+
+<EditForm Model="@Invoice">
+    <DataAnnotationsValidator/>
+    <table class="table">
+        <tr>
+            <td>Fecha: </td>
+            <td><input type="date" @bind="Invoice.Date" /></td>
+            <ValidationMessage For="(()=> Invoice.Date)"/>
+        </tr>
+        <tr>
+            <td>Detalle: </td>
+            <td><input type="text" @bind="Invoice.Detail" /></td>
+            <ValidationMessage For="(()=> Invoice.Detail)" />
+        </tr>
+        <tr>
+            <td>Importe: </td>
+            <td><input type="number" @bind="Invoice.Amount" /></td>
+            <ValidationMessage For="(()=> Invoice.Amount)" />
+        </tr>
+        <td>Cliente: </td>
+        <InputSelect @bind-Value="@Invoice.CustomerId">
+            <option value="">Seleccione un Cliente</option>
+            @foreach (var customer in Customers)
+            {
+                <option value="@customer.Id">@customer.Name @customer.LastName</option>
+            }
+        </InputSelect>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="submit" value="Save" @onclick="SaveInvoice" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="submit" value="Cancel" @onclick="CancelCreated" />
+            </td>
+        </tr>
+    </table>
+
+</EditForm>
+
+@code {
+    InvoiceModel Invoice { get; set; } = new();
+    List<CustomerListModel>? Customers { get; set; } = new();
+
+    protected async Task SaveInvoice()
+    {
+        var invoice = await _invoiceService.CreateInvoiceAsync(this.Invoice);
+        if (invoice)
+        {
+            _navigationManager.NavigateTo("/customers/list");
+        }
+    }
+
+    protected void CancelCreated()
+    {
+        _navigationManager.NavigateTo("/customers/list");
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Customers = await _customerService.GetAllCustomersAsync();
+    }
+}

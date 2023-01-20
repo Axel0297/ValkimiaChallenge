@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Auth\**" />
+    <Content Remove="Data\Auth\**" />
+    <EmbeddedResource Remove="Data\Auth\**" />
+    <None Remove="Data\Auth\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Billing.Api\Billing.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.13" />
+  </ItemGroup>
+
+</Project>

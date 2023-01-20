@@ -1,0 +1,88 @@
+﻿@page "/customers/create"
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ICustomerService _customerService
+@inject ICityService _cityService
+@inject NavigationManager _navigationManager
+
+<h1>Agregar Nuevo Cliente</h1>
+
+<EditForm Model="@Customer">
+    <DataAnnotationsValidator/>
+    <table class="table">
+        <tr>
+            <td>Nombre: </td>
+            <td><input type="text" @bind="Customer.Name" /></td>
+            <ValidationMessage For="(()=> Customer.Name)"/>
+        </tr>
+        <tr>
+            <td>Apellido: </td>
+            <td><input type="text" @bind="Customer.LastName" /></td>
+            <ValidationMessage For="(()=> Customer.LastName)" />
+        </tr>
+        <tr>
+            <td>Direccion: </td>
+            <td><input type="text" @bind="Customer.Address" /></td>
+            <ValidationMessage For="(()=> Customer.Address)" />
+        </tr>
+        <tr>
+            <td>Email: </td>
+            <td><input type="email" @bind="Customer.Email" /></td>
+            <ValidationMessage For="(()=> Customer.Email)" />
+        </tr>
+        <tr>
+            <td>Password: </td>
+            <td><input type="Password" @bind="Customer.Password" /></td>
+            <ValidationMessage For="(()=> Customer.Password)" />
+        </tr>
+        <tr>
+            <td>Ciudad: </td>
+            <InputSelect @bind-Value="@Customer.CityId">
+                <option value="">Seleccione una ciudad</option>
+                @foreach (var city in cities)
+                {
+                    <option value="@city.Id">@city.Name</option>
+                }
+            </InputSelect>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="submit" value="Save" @onclick="SaveCustomer" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="submit" value="Cancel" @onclick="CancelCreated" />
+            </td>
+        </tr>
+    </table>
+
+</EditForm>
+
+@code {
+    CustomerModel Customer { get; set; } = new();
+
+    private List<CityModel> cities = new();
+
+    protected async Task SaveCustomer()
+    {
+        var customer = await _customerService.CreateCustomerAsync(this.Customer);
+        if (customer)
+        {
+            _navigationManager.NavigateTo("/customers/list");
+        }
+    }
+
+    protected void CancelCreated()
+    {
+        _navigationManager.NavigateTo("/customers/list");
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        cities = await _cityService.GetAllCitiesAsync();
+    }
+
+}

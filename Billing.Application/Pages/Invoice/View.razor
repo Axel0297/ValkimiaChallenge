@@ -1,0 +1,47 @@
+﻿@page "/invoices/view/{id:guid}"
+@attribute [Authorize]
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ITokenService _tokenService
+@inject ICustomerService _customerService
+@inject IInvoiceService _invoiceService
+@inject NavigationManager _navigationManager
+
+<h1>Detalles de la Factura</h1>
+
+<table class="table">
+    <tr>
+        <td>Nombre de Cliente:</td>
+        <td><label>@Invoice.Customer?.Name @Invoice.Customer?.LastName</label></td>
+    </tr>
+    <tr>
+        <td>Direccion de Cliente:</td>
+        <td><label>@Invoice.Customer?.Address</label></td>
+    </tr>
+    <tr>
+        <td>Fecha:</td>
+        <td><label>@Invoice.Date</label></td>
+    </tr>
+    <tr>
+        <td>Detalle:</td>
+        <td><label>@Invoice.Detail</label></td>
+    </tr>
+    <tr>
+        <td>Monto:</td>
+        <td><label>@Invoice.Amount</label></td>
+    </tr>
+</table>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private InvoiceModel Invoice { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Invoice = await _invoiceService.GetInvoiceAsync(Id);
+    }
+}

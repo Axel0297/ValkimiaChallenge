@@ -1,0 +1,16 @@
+﻿@page "/logout"
+
+@using Billing.Application.Data.Services.Contracts;
+
+@inject ICustomerService _customerService
+@inject NavigationManager _navigationManager
+
+<text>Logging out...</text>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _customerService.LogoutAsync();
+        _navigationManager.NavigateTo("login");
+    }
+}

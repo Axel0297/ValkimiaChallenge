@@ -1,0 +1,42 @@
+﻿@page "/invoices/list"
+@attribute [Authorize]
+
+@using Billing.Application.Data.Models;
+@using Billing.Application.Data.Services.Contracts;
+
+@inject NavigationManager _navigationManager
+@inject IInvoiceService _invoiceService
+@inject ITokenService _tokenService
+
+<h1>Facturas del Cliente</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Detalle</th>
+            <th>Fecha</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Invoices)
+            {
+        <td>@invoice.Detail</td>
+        <td>@invoice.Date</td>
+        <td><a href="/invoices/view/@invoice.Id">Ver Detalle</a></td>
+            }
+    </tbody>
+</table>
+
+
+@code {
+    private List<InvoiceListModel> Invoices { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await _tokenService.GetToken();
+        if (token?.CustomerId == Guid.Empty) return;
+
+        Invoices = await _invoiceService.GetInvoicesByCustomerId(token.CustomerId);
+    }
+}
